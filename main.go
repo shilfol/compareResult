@@ -42,11 +42,11 @@ func compareRank(idol idolResult, datas []idolResult, wg *sync.WaitGroup) {
 	for _, data := range datas {
 		if idol.name == data.name {
 			if idol.rank > data.rank {
-				fmt.Println(idol.name, ": dere", idol.rank, " < ", data.rank, "moba")
+				fmt.Println(idol.name, ": dere", idol.rank, " < ", data.rank, "moba, diff:", idol.rank-data.rank)
 			} else if idol.rank == data.rank {
 				fmt.Println(idol.name, ": dere", idol.rank, " = ", data.rank, "moba")
 			} else {
-				fmt.Println(idol.name, ": dere", idol.rank, " > ", data.rank, "moba")
+				fmt.Println(idol.name, ": dere", idol.rank, " > ", data.rank, "moba, diff:", data.rank-idol.rank)
 			}
 			return
 		}
