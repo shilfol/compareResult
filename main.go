@@ -52,6 +52,24 @@ func readFile(filepath string) []idolResult {
 	return res
 }
 
+func readFileToMap(filepath string) map[string]bool {
+	file, err := os.Open(filepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	res := map[string]bool{}
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		res[line] = true
+	}
+	return res
+
+}
+
 func compareRank(idol idolResult, datas []idolResult, resChan chan sendResult) {
 	for _, data := range datas {
 		if idol.name == data.name {
@@ -77,7 +95,7 @@ func main() {
 	var wg sync.WaitGroup
 	dere := readFile("./star_distinct.txt")
 	moba := readFile("./moba_distinct.txt")
-	//all := readFile("./all_distinct.txt")
+	allmap := readFileToMap("./real_result.txt")
 
 	maxc := make(chan int, 30)
 	resultChan := make(chan sendResult, len(dere))
@@ -119,25 +137,25 @@ func main() {
 
 	fmt.Println("equal")
 	for _, v := range equals {
-		fmt.Println(v.name)
+		if allmap[v.name] {
+			fmt.Println(v.name)
+		}
 	}
 	fmt.Println()
 
 	fmt.Println("dere")
-	for i := 0; i < len(dere); i++ {
-		if deres[i].diff < 10 {
-			break
+	for _, v := range deres {
+		if allmap[v.name] {
+			fmt.Println(v.name, v.diff)
 		}
-		fmt.Println(deres[i].name, deres[i].diff)
 	}
 	fmt.Println()
 
 	fmt.Println("moba")
-	for i := 0; i < len(moba); i++ {
-		if mobas[i].diff < 10 {
-			break
+	for _, v := range mobas {
+		if allmap[v.name] {
+			fmt.Println(v.name, v.diff)
 		}
-		fmt.Println(mobas[i].name, mobas[i].diff)
 	}
 
 }
