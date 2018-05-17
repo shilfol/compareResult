@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime"
+	//	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -38,8 +38,7 @@ func readFile(filepath string) []idolResult {
 	return res
 }
 
-func compareRank(idol idolResult, datas []idolResult, wg *sync.WaitGroup) {
-	defer wg.Done()
+func compareRank(idol idolResult, datas []idolResult) {
 	for _, data := range datas {
 		if idol.name == data.name {
 			if idol.rank > data.rank {
@@ -56,16 +55,22 @@ func compareRank(idol idolResult, datas []idolResult, wg *sync.WaitGroup) {
 
 func main() {
 	var wg sync.WaitGroup
-
-	fmt.Println("num:", runtime.NumCPU())
-	runtime.GOMAXPROCS(runtime.NumCPU())
 	dere := readFile("./star_distinct.txt")
 	moba := readFile("./moba_distinct.txt")
 	//all := readFile("./all_distinct.txt")
 
+	maxc := make(chan int, 30)
 	for _, v := range dere {
 		wg.Add(1)
-		go compareRank(v, moba, &wg)
+		go func(data idolResult) {
+			maxc <- 1
+			defer func() {
+				<-maxc
+				wg.Done()
+			}()
+			compareRank(data, moba)
+		}(v)
+
 	}
 
 	wg.Wait()
