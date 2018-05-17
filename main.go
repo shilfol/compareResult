@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -56,6 +57,8 @@ func compareRank(idol idolResult, datas []idolResult, wg *sync.WaitGroup) {
 func main() {
 	var wg sync.WaitGroup
 
+	fmt.Println("num:", runtime.NumCPU())
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	dere := readFile("./star_distinct.txt")
 	moba := readFile("./moba_distinct.txt")
 	//all := readFile("./all_distinct.txt")
